@@ -6,9 +6,11 @@ on:
       - 'android/**'
       - 'src/**'
       - '.github/workflows/android.yml'
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,10 +26,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
 
       - name: Install SDK pieces
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+        shell: bash
+        run: |
+          echo "y" | sdkmanager --licenses
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "ndk;27.2.12479018" \
+            "cmake;3.22.1"
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -35,7 +46,7 @@ jobs:
 
       - name: Build
         working-directory: android
-        run: gradle assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
