@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.athoo.game'
+    compileSdk 35
+    ndkVersion '27.2.12479018'
+
+    defaultConfig {
+        applicationId 'com.athoo.game'
+        minSdk 26                      // AAudio needs Android 8.0
+        targetSdk 35                   // Android 15; runs unchanged on Android 16 / 17
+        versionCode 1
+        versionName '1.0'
+        ndk { abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64' }
+        externalNativeBuild {
+            cmake {
+                // 16 KB page-size compatible libraries (Android 15+ devices)
+                arguments '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON', '-DCMAKE_BUILD_TYPE=Release'
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+
+    signingConfigs {
+        // fixed personal key so later builds can be installed over earlier ones
+        personal {
+            storeFile file("$rootDir/atvm.jks")
+            storePassword 'atvm-debug'
+            keyAlias 'atvm'
+            keyPassword 'atvm-debug'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.personal
+        }
+    }
+
+    aaptOptions {
+        noCompress 'apk', 'wav'
+    }
+}

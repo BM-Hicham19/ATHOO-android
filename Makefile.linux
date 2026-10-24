@@ -1,0 +1,3 @@
+SRC=src/vm.c src/jlib.c src/droid.c src/res.c src/audio.c src/input.c src/buttons.c src/main_linux.c
+atvm_test: $(SRC) src/*.h
+	gcc -std=gnu99 -O1 -g -Wall -Wno-misleading-indentation -Wno-unused-parameter -Wno-unused-function -Isrc $(SRC) -o $@ -lm
